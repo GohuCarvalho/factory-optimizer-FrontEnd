@@ -54,9 +54,11 @@ function navigate(path) {
 }
 
 const menu = [
-  { label: "Dashboard", route: "/", icon: "🏭" },
-  { label: "Products", route: "/products", icon: "📦" },
-  { label: "Raw Materials", route: "/materials", icon: "🧱" }
+  { label: "Dashboard", route: "/" },
+  { label: "Raw Materials", route: "/materials" },
+  { label: "Products", route: "/products" },
+  { label: "Product Composition", route: "/product-composition" },
+  { label: "Production Plan", route: "/production-plan" }
 ]
 
 </script>

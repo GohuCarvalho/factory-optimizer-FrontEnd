@@ -2,23 +2,16 @@
 
 <div class="input-group">
 
-<label :for="name">
-  {{ label }}
+<label v-if="label">
+{{ label }}
 </label>
 
 <input
-  :id="name"
-  :type="type"
-  :placeholder="placeholder"
-  :value="modelValue"
-  @input="updateValue"
-  :required="required"
-  :disabled="disabled"
+:type="type"
+:value="modelValue"
+:placeholder="placeholder"
+@input="$emit('update:modelValue', $event.target.value)"
 />
-
-<span v-if="error" class="error">
-  {{ error }}
-</span>
 
 </div>
 
@@ -27,49 +20,39 @@
 <script setup>
 
 defineProps({
-  label: String,
-  name: String,
-  modelValue: [String, Number],
-  type: {
-    type: String,
-    default: "text"
-  },
-  placeholder: String,
-  error: String,
-  required: Boolean,
-  disabled: Boolean
+label: String,
+
+modelValue: [String, Number],
+
+type: {
+type: String,
+default: "text"
+},
+
+placeholder: String
 })
 
-const emit = defineEmits(["update:modelValue"])
-
-function updateValue(event) {
-  emit("update:modelValue", event.target.value)
-}
+defineEmits(["update:modelValue"])
 
 </script>
 
 <style scoped>
 
 .input-group {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 16px;
+display: flex;
+flex-direction: column;
+margin-bottom: 16px;
 }
 
 label {
-  font-weight: 600;
-  margin-bottom: 4px;
+font-weight: 600;
+margin-bottom: 6px;
 }
 
 input {
-  padding: 8px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-}
-
-.error {
-  color: red;
-  font-size: 12px;
+padding: 8px;
+border: 1px solid #ccc;
+border-radius: 4px;
 }
 
 </style>

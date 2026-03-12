@@ -11,7 +11,7 @@
   {{ column.label }}
 </th>
 
-<th v-if="hasActions">
+<th v-if="$slots.actions">
   Actions
 </th>
 
@@ -21,7 +21,7 @@
 <tbody>
 
 <tr v-if="data.length === 0">
-<td :colspan="columns.length + (hasActions ? 1 : 0)" class="empty">
+<td :colspan="columns.length + ($slots.actions ? 1 : 0)" class="empty">
 No data available
 </td>
 </tr>
@@ -32,15 +32,9 @@ No data available
   {{ row[column.key] }}
 </td>
 
-<td v-if="hasActions" class="actions">
+<td v-if="$slots.actions">
 
-<button @click="$emit('edit', row)">
-Edit
-</button>
-
-<button @click="$emit('delete', row)">
-Delete
-</button>
+<slot name="actions" :row="row" />
 
 </td>
 
@@ -61,11 +55,8 @@ defineProps({
   data: {
     type: Array,
     default: () => []
-  },
-  hasActions: Boolean
+  }
 })
-
-defineEmits(["edit", "delete"])
 
 </script>
 
@@ -85,7 +76,6 @@ th {
   background: var(--verde-primario);
   color: white;
   padding: 10px;
-  text-align: left;
 }
 
 td {
@@ -94,11 +84,7 @@ td {
 }
 
 tr:hover {
-  background: #f7f7f7;
-}
-
-.actions button {
-  margin-right: 6px;
+  background: #f5f5f5;
 }
 
 .empty {
