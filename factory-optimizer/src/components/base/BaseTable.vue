@@ -1,0 +1,110 @@
+<template>
+
+<div class="table-wrapper">
+
+<table class="table">
+
+<thead>
+<tr>
+
+<th v-for="column in columns" :key="column.key">
+  {{ column.label }}
+</th>
+
+<th v-if="hasActions">
+  Actions
+</th>
+
+</tr>
+</thead>
+
+<tbody>
+
+<tr v-if="data.length === 0">
+<td :colspan="columns.length + (hasActions ? 1 : 0)" class="empty">
+No data available
+</td>
+</tr>
+
+<tr v-for="(row, index) in data" :key="index">
+
+<td v-for="column in columns" :key="column.key">
+  {{ row[column.key] }}
+</td>
+
+<td v-if="hasActions" class="actions">
+
+<button @click="$emit('edit', row)">
+Edit
+</button>
+
+<button @click="$emit('delete', row)">
+Delete
+</button>
+
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+</template>
+
+<script setup>
+
+defineProps({
+  columns: Array,
+  data: {
+    type: Array,
+    default: () => []
+  },
+  hasActions: Boolean
+})
+
+defineEmits(["edit", "delete"])
+
+</script>
+
+<style scoped>
+
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  background: var(--verde-primario);
+  color: white;
+  padding: 10px;
+  text-align: left;
+}
+
+td {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+tr:hover {
+  background: #f7f7f7;
+}
+
+.actions button {
+  margin-right: 6px;
+}
+
+.empty {
+  text-align: center;
+  padding: 20px;
+  color: #999;
+}
+
+</style>
