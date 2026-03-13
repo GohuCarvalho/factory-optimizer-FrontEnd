@@ -85,7 +85,9 @@ loadDashboard()
 <style scoped>
 
 .page{
-max-width:900px;
+display:flex;
+flex-direction:column;
+gap:24px;
 }
 
 .cards{
@@ -98,10 +100,17 @@ flex-wrap:wrap;
 .card{
 background:white;
 padding:20px;
-border-radius:8px;
-box-shadow:0 2px 8px rgba(0,0,0,0.1);
+border-radius:10px;
+box-shadow:0 4px 12px rgba(0,0,0,0.08);
 min-width:180px;
 flex:1;
+
+transition:transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.card:hover{
+transform:translateY(-2px);
+box-shadow:0 6px 16px rgba(0,0,0,0.12);
 }
 
 .card h3{

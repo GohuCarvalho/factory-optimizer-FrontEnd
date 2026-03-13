@@ -85,6 +85,10 @@ loading.value = false
 
 .page{
 max-width:900px;
+
+display:flex;
+flex-direction:column;
+gap:24px;
 }
 
 .result{

@@ -8,22 +8,20 @@
 
 <BaseInput
 label="Material Name"
-placeholder="Enter material name"
 v-model="material.name"
 />
 
 <BaseInput
 label="Stock Quantity"
 type="number"
-placeholder="Enter quantity"
 v-model="material.stockQuantity"
 />
 
 <BaseButton
 :loading="loading"
-@click="createMaterial"
+@click="saveMaterial"
 >
-Add Material
+{{ editing ? "Update Material" : "Add Material" }}
 </BaseButton>
 
 </div>
@@ -35,7 +33,16 @@ Add Material
 
 <template #actions="{ row }">
 
-<BaseButton @click="deleteMaterial(row)">
+<BaseButton
+@click="editMaterial(row)"
+>
+Edit
+</BaseButton>
+
+<BaseButton
+variant="danger"
+@click="deleteMaterial(row)"
+>
 Delete
 </BaseButton>
 
@@ -60,34 +67,72 @@ import { useToast } from "@/composables/useToast"
 import {
 getRawMaterials,
 createRawMaterial,
+updateRawMaterial,
 deleteRawMaterial
 } from "../services/rawMaterialService"
 
 const materials = ref([])
 
 const material = ref({
-name: "",
-stockQuantity: ""
+id:null,
+name:"",
+stockQuantity:""
 })
+
+const editing = ref(false)
 
 const loading = ref(false)
 
 const { showToast } = useToast()
 
 const columns = [
-{ key: "name", label: "Name" },
-{ key: "stockQuantity", label: "Quantity" }
+{ key:"name", label:"Name" },
+{ key:"stockQuantity", label:"Quantity" }
 ]
 
-async function loadMaterials() {
+async function loadMaterials(){
+
+try{
 
 const response = await getRawMaterials()
 
 materials.value = response.data
 
+}catch(error){
+
+console.error(error)
+
+showToast("Error loading materials")
+
 }
 
-async function createMaterial(){
+}
+
+function editMaterial(row){
+
+material.value = {
+id:row.id,
+name:row.name,
+stockQuantity:row.stockQuantity
+}
+
+editing.value = true
+
+}
+
+function resetForm(){
+
+material.value = {
+id:null,
+name:"",
+stockQuantity:""
+}
+
+editing.value = false
+
+}
+
+async function saveMaterial(){
 
 if(!material.value.name || !material.value.stockQuantity){
 
@@ -101,14 +146,27 @@ loading.value = true
 
 try{
 
-await createRawMaterial(material.value)
+if(editing.value){
 
-showToast("Material created successfully")
+await updateRawMaterial(material.value.id,{
+name:material.value.name,
+stockQuantity:Number(material.value.stockQuantity)
+})
 
-material.value = {
-name:"",
-stockQuantity:""
+showToast("Material updated")
+
+}else{
+
+await createRawMaterial({
+name:material.value.name,
+stockQuantity:Number(material.value.stockQuantity)
+})
+
+showToast("Material created")
+
 }
+
+resetForm()
 
 await loadMaterials()
 
@@ -116,7 +174,7 @@ await loadMaterials()
 
 console.error(error)
 
-showToast("Error creating material")
+showToast("Error saving material")
 
 }finally{
 
@@ -127,6 +185,8 @@ loading.value = false
 }
 
 async function deleteMaterial(row){
+
+if(!confirm("Delete this material?")) return
 
 try{
 
@@ -146,8 +206,10 @@ showToast("Error deleting material")
 
 }
 
-onMounted(()=>{
-loadMaterials()
+onMounted(async ()=>{
+
+await loadMaterials()
+
 })
 
 </script>
@@ -156,10 +218,9 @@ loadMaterials()
 
 .page{
 max-width:900px;
-}
-
-h1{
-margin-bottom:20px;
+display:flex;
+flex-direction:column;
+gap:24px;
 }
 
 .form{
@@ -168,3 +229,4 @@ margin-bottom:40px;
 }
 
 </style>
+

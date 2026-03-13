@@ -6,7 +6,11 @@
 
 <main class="content">
 
+<div class="page-container">
+
 <router-view />
+
+</div>
 
 </main>
 
@@ -32,6 +36,14 @@ import AppSidebar from "./AppSidebar.vue"
   padding: 32px;
   background: #f5f6fa;
   overflow-y: auto;
+
+  display: flex;
+  justify-content: center;
+}
+
+.page-container {
+  width: 100%;
+  max-width: 1100px;
 }
 
 </style>

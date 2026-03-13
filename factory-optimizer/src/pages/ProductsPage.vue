@@ -19,9 +19,9 @@ v-model="product.productValue"
 
 <BaseButton
 :loading="loading"
-@click="createProduct"
+@click="saveProduct"
 >
-Add Product
+{{ editing ? "Update Product" : "Add Product" }}
 </BaseButton>
 
 </div>
@@ -33,7 +33,16 @@ Add Product
 
 <template #actions="{ row }">
 
-<BaseButton @click="deleteProduct(row)">
+<BaseButton
+@click="editProduct(row)"
+>
+Edit
+</BaseButton>
+
+<BaseButton
+variant="danger"
+@click="deleteProduct(row)"
+>
 Delete
 </BaseButton>
 
@@ -56,96 +65,151 @@ import BaseTable from "../components/base/BaseTable.vue"
 import { useToast } from "@/composables/useToast"
 
 import {
-  getProducts,
-  createProduct as createProductService,
-  deleteProduct as deleteProductService
+getProducts,
+createProduct,
+updateProduct,
+deleteProduct as deleteProductService
 } from "../services/productService"
 
 const products = ref([])
 
 const product = ref({
-  name: "",
-  productValue: ""
+id:null,
+name:"",
+productValue:""
 })
+
+const editing = ref(false)
 
 const loading = ref(false)
 
 const { showToast } = useToast()
 
 const columns = [
-  { key: "name", label: "Name" },
-  { key: "productValue", label: "Value" }
+{ key:"name", label:"Name" },
+{ key:"productValue", label:"Value" }
 ]
 
-async function loadProducts() {
+async function loadProducts(){
 
-  const response = await getProducts()
+try{
 
-  products.value = response.data
+const response = await getProducts()
+
+products.value = response.data
+
+}catch(error){
+
+console.error(error)
+
+showToast("Error loading products")
 
 }
 
-async function createProduct(){
+}
 
-  if(!product.value.name || !product.value.productValue){
+function editProduct(row){
 
-    showToast("Fill all fields")
+product.value = {
+id:row.id,
+name:row.name,
+productValue:row.productValue
+}
 
-    return
+editing.value = true
 
-  }
+}
 
-  loading.value = true
+function resetForm(){
 
-  try{
+product.value = {
+id:null,
+name:"",
+productValue:""
+}
 
-    await createProductService(product.value)
+editing.value = false
 
-    showToast("Product created successfully")
+}
 
-    product.value = {
-      name:"",
-      productValue:""
-    }
+async function saveProduct(){
 
-    await loadProducts()
+if(!product.value.name || !product.value.productValue){
 
-  }catch(error){
+showToast("Fill all fields")
 
-    console.error(error)
+return
 
-    showToast("Error creating product")
+}
 
-  }finally{
+loading.value = true
 
-    loading.value = false
+try{
 
-  }
+if(editing.value){
+
+await updateProduct(product.value.id,{
+name:product.value.name,
+productValue:Number(product.value.productValue)
+})
+
+showToast("Product updated")
+
+}else{
+
+await createProduct({
+name:product.value.name,
+productValue:Number(product.value.productValue)
+})
+
+showToast("Product created")
+
+}
+
+resetForm()
+
+await loadProducts()
+
+}catch(error){
+
+console.error(error)
+
+showToast("Error saving product")
+
+}finally{
+
+loading.value = false
+
+}
 
 }
 
 async function deleteProduct(row){
 
-  try{
+if(!confirm("Delete this product?")) return
 
-    await deleteProductService(row.id)
+try{
 
-    showToast("Product deleted")
+await deleteProductService(row.id)
 
-    await loadProducts()
+showToast("Product deleted")
 
-  }catch(error){
+await loadProducts()
 
-    console.error(error)
+}catch(error){
 
-    showToast("Error deleting product")
+console.error(error)
 
-  }
+showToast("Error deleting product")
 
 }
 
-onMounted(()=>{
-  loadProducts()
+}
+
+onMounted(async ()=>{
+
+await loadProducts()
+
 })
 
 </script>
@@ -154,6 +218,9 @@ onMounted(()=>{
 
 .page{
 max-width:900px;
+display:flex;
+flex-direction:column;
+gap:24px;
 }
 
 .form{
@@ -162,3 +229,4 @@ margin-bottom:40px;
 }
 
 </style>
+

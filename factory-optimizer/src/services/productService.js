@@ -8,6 +8,10 @@ export const createProduct = (product) => {
   return api.post("/products", product)
 }
 
+export const updateProduct = (id, product) => {
+  return api.put(`/products/${id}`, product)
+}
+
 export const deleteProduct = (id) => {
   return api.delete(`/products/${id}`)
 }

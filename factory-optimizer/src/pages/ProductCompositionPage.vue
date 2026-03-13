@@ -118,6 +118,10 @@ onMounted(loadCompositions)
 
 .page{
 max-width:900px;
+
+display:flex;
+flex-direction:column;
+gap:24px;
 }
 
 .form{

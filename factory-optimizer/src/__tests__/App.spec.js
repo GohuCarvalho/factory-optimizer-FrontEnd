@@ -1,11 +1,29 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect } from "vitest"
+import { mount } from "@vue/test-utils"
+import { createRouter, createWebHistory } from "vue-router"
 
-import { mount } from '@vue/test-utils'
-import App from '../App.vue'
+import App from "../App.vue"
 
-describe('App', () => {
-  it('mounts renders properly', () => {
-    const wrapper = mount(App)
-    expect(wrapper.text()).toContain('You did it!')
+const router = createRouter({
+  history: createWebHistory(),
+  routes: []
+})
+
+describe("App.vue", () => {
+
+  it("should mount the application", async () => {
+
+    router.push("/")
+    await router.isReady()
+
+    const wrapper = mount(App, {
+      global: {
+        plugins: [router]
+      }
+    })
+
+    expect(wrapper.exists()).toBe(true)
+
   })
+
 })
