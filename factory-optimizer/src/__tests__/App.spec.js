@@ -25,5 +25,6 @@ describe("App.vue", () => {
     expect(wrapper.exists()).toBe(true)
 
   })
+  
 
 })
